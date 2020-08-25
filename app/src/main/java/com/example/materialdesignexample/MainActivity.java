@@ -1,6 +1,7 @@
 package com.example.materialdesignexample;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,10 +12,6 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-/***
- * Main Activity for the Material Me app, a mock sports news application.
- */
 public class MainActivity extends AppCompatActivity {
 
     // Member variables.
@@ -30,8 +27,12 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the RecyclerView.
         mRecyclerView = findViewById(R.id.recyclerView);
 
+        // Get the appropriate column count.
+        int gridColumnCount = getResources().getInteger(R.integer.grid_column_count);
+
         // Set the Layout Manager.
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(
+                this, gridColumnCount));
 
         // Initialize the ArrayList that will contain the data.
         mSportsData = new ArrayList<>();
@@ -43,21 +44,29 @@ public class MainActivity extends AppCompatActivity {
         // Get the data.
         initializeData();
 
+        // If there is more than one column, disable swipe to dismiss
+        int swipeDirs;
+        if(gridColumnCount > 1){
+            swipeDirs = 0;
+        } else {
+            swipeDirs = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+        }
+
         // Helper class for creating swipe to dismiss and drag and drop
-        // functionality.
+        // functionality
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper
                 .SimpleCallback(
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT |
                         ItemTouchHelper.DOWN | ItemTouchHelper.UP,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                swipeDirs) {
             /**
              * Defines the drag and drop functionality.
              *
-             * @param recyclerView The RecyclerView that contains the list items
-             * @param viewHolder The SportsViewHolder that is being moved
+             * @param recyclerView The RecyclerView that contains the list items.
+             * @param viewHolder The SportsViewHolder that is being moved.
              * @param target The SportsViewHolder that you are switching the
              *               original one with.
-             * @return true if the item was moved, false otherwise
+             * @return returns true if the item was moved, false otherwise
              */
             @Override
             public boolean onMove(RecyclerView recyclerView,
@@ -102,14 +111,14 @@ public class MainActivity extends AppCompatActivity {
                 .getStringArray(R.array.sports_titles);
         String[] sportsInfo = getResources()
                 .getStringArray(R.array.sports_info);
-        TypedArray sportsImageResources = getResources()
-                .obtainTypedArray(R.array.sports_images);
+        TypedArray sportsImageResources =
+                getResources().obtainTypedArray(R.array.sports_images);
 
         // Clear the existing data (to avoid duplication).
         mSportsData.clear();
 
         // Create the ArrayList of Sports objects with the titles and
-        // information about each sport
+        // information about each sport.
         for (int i = 0; i < sportsList.length; i++) {
             mSportsData.add(new Sport(sportsList[i], sportsInfo[i],
                     sportsImageResources.getResourceId(i, 0)));
