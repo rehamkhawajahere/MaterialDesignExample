@@ -12,6 +12,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
 public class MainActivity extends AppCompatActivity {
 
     // Member variables.
